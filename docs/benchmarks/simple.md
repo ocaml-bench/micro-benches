@@ -1,4 +1,5 @@
 # simple/ — stdlib-only sequential benchmarks
+<!-- TODO(docs): this repo was renamed from benches to micro-benches (github.com/ocaml-bench/micro-benches, default checkout ~/micro-benches); update the `benches/...` paths on this page -->
 
 Stdlib- and unix-only sequential benchmarks, one binary each. Most are the classic sandmark set; `capi/` is the odd one out (mixed OCaml/C). 24 programs.
 

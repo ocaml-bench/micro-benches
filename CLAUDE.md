@@ -1,4 +1,4 @@
-# CLAUDE.md — working notes for agents & contributors on `benches`
+# CLAUDE.md — working notes for agents & contributors on `micro-benches`
 
 Auto-loaded context for Claude Code (and a reference for contributors). The
 human-facing docs are `README.md` and the per-group pages under
@@ -37,7 +37,7 @@ backlog.
 
 - **Do not comment on PRs, or add to PRs, unless explicitly asked to.**
 - No "Claude"/Anthropic/Co-Authored-By: Claude in further commit messages.
-- **Remote is `origin = github.com/ocaml-bench/benches`** — a *shared org* repo,
+- **Remote is `origin = github.com/ocaml-bench/micro-benches`** — a *shared org* repo,
   not a personal fork. Commit/push only when asked.
 - **Build-script contract:** a `<name>.build.sh` assumes the opam switch is
   already activated (compiler + `dune` on PATH) and must produce the binary at
@@ -109,7 +109,7 @@ switch; a missing one is reported and skipped.
 stale binary from the previous compiler makes a build failure look like a pass
 (and makes running-ng skip the rebuild).
 
-Or drive running-ng directly: `RUNNING_BENCH_DIR=~/benches CONFIG_FILE=… bash
+Or drive running-ng directly: `RUNNING_BENCH_DIR=~/micro-benches CONFIG_FILE=… bash
 build_ocaml_binaries_gc_sweep.sh` (build) / `run_ocaml_bench_gc_sweep.sh` (run).
 Configs pointing here: `examples/smoke_micro_550.yml` (six benchmarks, ~1 min)
 and `experiments/e2e_micro_5.5.0_vs_trunk.yml` (whole suite). Pass
@@ -208,8 +208,8 @@ compiler as the workload. running-ng always exports all five.
   thing; running-ng's launch scripts export both as synonyms. Historical, and
   not worth a flag day — but note the two entry points disagreed until
   2026-08-10 (`build_ocaml_binaries_gc_sweep.sh` read only the first, and
-  resolved its `../benches` fallback eagerly under `set -e`, so a macro-only
-  *build* aborted if `~/benches` was absent). Fixed; keep them symmetric.
+  resolved its `../micro-benches` fallback eagerly under `set -e`, so a macro-only
+  *build* aborted if `~/micro-benches` was absent). Fixed; keep them symmetric.
 - **Manifest location and per-program fields.** `benchmarks/manifest.yml` with
   `tool:` there, root `manifest.yml` with `path:` here — because this repo has
   no single `benchmarks/` directory, its groups are top-level. macro-benches has

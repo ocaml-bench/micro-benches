@@ -1,4 +1,5 @@
 # with_packages/ — benchmarks needing external opam packages
+<!-- TODO(docs): this repo was renamed from benches to micro-benches (github.com/ocaml-bench/micro-benches, default checkout ~/micro-benches); update the `benches/...` paths on this page -->
 
 Benchmarks in `with_packages/` require external opam packages. **No manual
 package installation is needed** — each build script runs `opam install <pkg> -y`

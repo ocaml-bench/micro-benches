@@ -1,4 +1,5 @@
 # benches
+<!-- TODO(docs): this repo was renamed from benches to micro-benches (github.com/ocaml-bench/micro-benches, default checkout ~/micro-benches); update the title and the RUNNING_BENCH_DIR=~/benches example -->
 
 A suite of OCaml **micro-benchmarks**, ported from
 [sandmark](https://github.com/ocaml-bench/sandmark), for comparing one OCaml
