@@ -69,9 +69,11 @@ jobs:
       # us a stale trunk switch and the run would silently not test the tip.
       - name: Resolve compiler identity
         id: compiler
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           if [[ "${{ matrix.ocaml }}" == *trunk* ]]; then
-            sha="$(curl -fsSL https://api.github.com/repos/ocaml/ocaml/commits/trunk \
+            sha="$(curl -fsSL -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/ocaml/ocaml/commits/trunk \
                    | python3 -c 'import json,sys; print(json.load(sys.stdin)["sha"][:12])')"
             echo "id=trunk-${sha}" >> "$GITHUB_OUTPUT"
             echo "### Compiler: ocaml/ocaml trunk @ \`${sha}\`" >> "$GITHUB_STEP_SUMMARY"
