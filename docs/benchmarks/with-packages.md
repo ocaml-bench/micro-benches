@@ -1,5 +1,4 @@
 # with_packages/ — benchmarks needing external opam packages
-<!-- TODO(docs): this repo was renamed from benches to micro-benches (github.com/ocaml-bench/micro-benches, default checkout ~/micro-benches); update the `benches/...` paths on this page -->
 
 Benchmarks in `with_packages/` require external opam packages. **No manual
 package installation is needed** — each build script runs `opam install <pkg> -y`
@@ -30,7 +29,7 @@ sandmark-with-packages:
 
 ### benchmarksgame
 
-Seven programs sharing `benches/with_packages/benchmarksgame/`. Each has its own build script; all use dune and link against `zarith`, `str`, and `unix`.
+Seven programs sharing `with_packages/benchmarksgame/`. Each has its own build script; all use dune and link against `zarith`, `str`, and `unix`.
 
 - **binarytrees5** — Args: `21`. Allocates and traverses binary trees of depth 21 using Zarith big integers for node values. GC-intensive short-lived allocation.
 - **fasta3** — Args: `25000000`. Generates a DNA sequence of 25M characters using cumulative probability tables. Exercises sequential array access.
@@ -57,7 +56,7 @@ Three programs sharing `with_packages/zarith/`. Each has its own build script; a
 
 ### thread_ring_lwt_mvar / thread_ring_lwt_stream
 
-Both in `benches/with_packages/thread-lwt/`; shared dune file.
+Both in `with_packages/thread-lwt/`; shared dune file.
 
 - **Source:** sandmark `benchmarks/thread-lwt/`
 - **Build:** dune + `lwt`, `lwt.unix`

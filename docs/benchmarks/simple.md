@@ -1,5 +1,4 @@
 # simple/ — stdlib-only sequential benchmarks
-<!-- TODO(docs): this repo was renamed from benches to micro-benches (github.com/ocaml-bench/micro-benches, default checkout ~/micro-benches); update the `benches/...` paths on this page -->
 
 Stdlib- and unix-only sequential benchmarks, one binary each. Most are the classic sandmark set; `capi/` is the odd one out (mixed OCaml/C). 24 programs.
 
@@ -56,7 +55,7 @@ Stdlib- and unix-only sequential benchmarks, one binary each. Most are the class
 ### kb_no_exc
 
 - **Source:** sandmark `benchmarks/kb/kb_no_exc.ml` (shares directory with `kb`)
-- **Build:** ocamlopt (stdlib only) — build script is `kb_no_exc.build.sh` in `benches/kb/`
+- **Build:** ocamlopt (stdlib only) — build script is `kb_no_exc.build.sh` in `simple/kb/`
 - **Args:** _(none)_ — runs 100 iterations of Knuth-Bendix completion internally
 - **Description:** Same algorithm as `kb` but with the exception-based search replaced by an explicit option type. Useful for comparing exception overhead against allocation/GC cost.
 
@@ -84,7 +83,7 @@ Stdlib- and unix-only sequential benchmarks, one binary each. Most are the class
 
 ### numerical-analysis
 
-Six benchmarks sharing `benches/numerical-analysis/`. Each has its own build script; two require two source files compiled in order.
+Six benchmarks sharing `simple/numerical-analysis/`. Each has its own build script; two require two source files compiled in order.
 
 #### crout_decomposition
 
