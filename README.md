@@ -14,7 +14,7 @@ small, documented contract. You can use it two ways:
 
 - **Standalone.** Activate any opam switch with `dune` on `PATH`, run a
   benchmark's build script, and run the binary yourself.
-- **Orchestrated.** Point an orchestrator such as [running-ng](https://github.com/udesou/running-ng) at
+- **Orchestrated.** Point an orchestrator such as [running-ng](https://github.com/ocaml-bench/running-ng) at
   the repo and let it manage per-runtime opam switches and drive cross-runtime comparisons or GC-parameter sweeps.
 
 ## The benchmarks
@@ -93,7 +93,7 @@ The prerequisite is to have an opam switch with `dune`. Note that without an orc
 ### Run sweeps
 
 For cross-runtime or doing GC-parameter sweeps you want an
-orchestrator to manage the per-runtime switches. [running-ng](https://github.com/udesou/running-ng) can be used 
+orchestrator to manage the per-runtime switches. [running-ng](https://github.com/ocaml-bench/running-ng) can be used 
 in combination with the micro-benchmarks by checking it out and defining `export RUNNING_BENCH_DIR=~/micro-benches`. 
 The set of scripts helps drive the benchmark runs. To know more about how to use running-ng see its own docs.
 
