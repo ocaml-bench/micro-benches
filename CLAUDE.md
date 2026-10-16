@@ -129,6 +129,7 @@ has passed. Anything not listed here builds and runs on both.
 |---|---|---|
 | `contrast` | `camlimages` 5.0.5 fails to build: `/usr/bin/ld: final link failed: bad value` | Pre-existing, both runtimes. Removed from running-ng's selection — the source stays, the sweep no longer wastes a build slot failing. Needs a camlimages that works on ≥ 5.4. |
 | `oxcaml_prefetch` | Uses OxCaml-only intrinsics | By design. `requires: oxcaml` in the manifest; skipped unless `RUNTIME_KIND=oxcaml`. |
+| `test_lwt` | On OCaml >= 5.7, lwt 6.1.2 fails to build: `An extra constructor, O_NOFOLLOW, is provided in the original definition` (ocaml/ocaml#15121 added `Unix.O_NOFOLLOW`) | Upstream lwt, no fix yet. `broken_from: "5.7"` in the manifest, so `ci-manifest.py list` skips it on 5.7+. Drop the field once a released lwt builds there. |
 
 Fixed as part of the 2026-08-10 sweep — each had **never** run successfully, on
 any runtime, and had been failing silently inside every sweep:
