@@ -37,7 +37,8 @@ suites:
     timeout: 120
   multicore-minilight:
     type: OCamlMulticoreBenchmarkSuite
-    timeout: 120
+    # 4 domains: on a 3-core macOS runner it takes 133 s (30 s with 3).
+    timeout: 300
   graph500par:
     type: OCamlMulticoreBenchmarkSuite
     timeout: 300
