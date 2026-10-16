@@ -23,6 +23,10 @@ trap 'rm -rf "${SCRATCH}"' EXIT
 
 mkdir -p "${LOG_DIR}"
 
+# macOS has no `timeout`; Homebrew coreutils installs it as `gtimeout`.
+TIMEOUT="$(command -v timeout || command -v gtimeout)" \
+  || { echo "ERROR: need timeout (GNU coreutils)." >&2; exit 1; }
+
 echo "=== Running all benchmarks once (runtime tag: ${RUNTIME_TAG}) ==="
 echo "scratch cwd: ${SCRATCH}"
 echo ""
@@ -57,7 +61,7 @@ while IFS=$'\t' read -r name path _script timeout_s args; do
   # Keep only the tail: fasta3/fasta6/revcomp2 write ~243 MB to stdout each.
   # `tail -c`, not `head -c`: head would SIGPIPE the benchmark and change the
   # exit code being checked (PIPESTATUS[0]).
-  ( cd "${cwd}" && timeout --kill-after=30s "${timeout_s}" "${exe}" "${argv[@]}" ) 2>&1 \
+  ( cd "${cwd}" && "${TIMEOUT}" --kill-after=30s "${timeout_s}" "${exe}" ${argv[@]+"${argv[@]}"} ) 2>&1 \
     | tail -c "${LOG_TAIL_BYTES:-65536}" > "${log}"
   rc=${PIPESTATUS[0]}
   elapsed=$((SECONDS - start))
@@ -96,7 +100,7 @@ if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
     echo ""
     echo "| program | result | wall | detail |"
     echo "|---|---|---:|---|"
-    for r in "${results[@]}"; do
+    for r in ${results[@]+"${results[@]}"}; do
       IFS='|' read -r status name elapsed detail <<< "${r}"
       icon=$([ "${status}" = "ok" ] && echo ":white_check_mark:" || echo ":x:")
       echo "| \`${name}\` | ${icon} ${status} | ${elapsed}s | ${detail} |"
