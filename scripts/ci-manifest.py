@@ -9,11 +9,14 @@
                          against running-ng's sweep config; opt-in, the only thing here
                          that looks outside this repo.
 
-Filters (list only): --only "a b c", --suite NAME, --runtime-kind K (default ocaml).
+Filters (list only): --only "a b c", --suite NAME, --runtime-kind K (default ocaml),
+--ocaml-version X.Y (default: `ocamlc -version`; skips programs `broken_from` it).
 """
 
 import argparse
 import os
+import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -46,8 +49,24 @@ def timeout_of(m, prog):
     return suite.get("timeout") or m.get("default_timeout", 120)
 
 
+def major_minor(v):
+    match = re.match(r"(\d+)\.(\d+)", v or "")
+    return (int(match.group(1)), int(match.group(2))) if match else None
+
+
+def ocaml_version(arg):
+    if arg:
+        return major_minor(arg)
+    try:
+        out = subprocess.run(["ocamlc", "-version"], capture_output=True, text=True).stdout
+    except OSError:
+        return None
+    return major_minor(out)
+
+
 def cmd_list(args):
     m = load()
+    version = ocaml_version(args.ocaml_version)
     only = set(args.only.split()) if args.only else None
     for name, p in (m.get("programs") or {}).items():
         if only is not None and name not in only:
@@ -56,6 +75,10 @@ def cmd_list(args):
             continue
         requires = p.get("requires")
         if requires and requires != args.runtime_kind:
+            continue
+        broken = major_minor(str(p.get("broken_from", "")))
+        if broken and version and version >= broken:
+            print(f"skipping {name}: broken from OCaml {p['broken_from']}", file=sys.stderr)
             continue
         print(
             "\t".join(
@@ -83,6 +106,8 @@ def cmd_check(args):
         s = d / script_of(name, p)
         if p.get("suite") not in suites:
             problems.append(f"{name}: suite {p.get('suite')!r} is not declared")
+        if "broken_from" in p and not re.fullmatch(r"\d+\.\d+", str(p["broken_from"])):
+            problems.append(f"{name}: broken_from {p['broken_from']!r} is not X.Y")
         if not d.is_dir():
             problems.append(f"{name}: no such directory {p['path']}")
             continue
@@ -168,6 +193,7 @@ def main():
     p_list.add_argument("--only", default="")
     p_list.add_argument("--suite", default="")
     p_list.add_argument("--runtime-kind", default="ocaml")
+    p_list.add_argument("--ocaml-version", default="")
     p_list.set_defaults(fn=cmd_list)
 
     p_check = sub.add_parser("check")

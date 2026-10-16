@@ -8,6 +8,8 @@
 # `inputs_generated: true`: the input is produced by a <name>.build.deps.sh in
 # the program's directory rather than committed, so `check` does not require it.
 # `disabled`: build scripts in the tree that no program runs.
+# `broken_from: "X.Y"`: CI skips the program on OCaml X.Y and later (an
+# upstream break, named in a comment, that this repo cannot patch).
 
 default_timeout: 120
 
@@ -702,6 +704,8 @@ programs:
     suite: sandmark-with-packages
     path: with_packages/valet
     args: "100"
+    # lwt 6.1.2 does not build on 5.7: ocaml/ocaml#15121 added Unix.O_NOFOLLOW.
+    broken_from: "5.7"
 
   # --- multicore-effects -------------------------------------------
   algorithmic_differentiation:
