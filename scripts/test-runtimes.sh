@@ -20,7 +20,8 @@ if [ $# -eq 0 ]; then
   newest_trunk="$(opam switch list --short 2>/dev/null \
     | grep "^${SWITCH_PREFIX}trunk-" \
     | while read -r sw; do
-        printf '%s\t%s\n' "$(stat -c %Y "$(opam var prefix --switch="$sw" 2>/dev/null)" 2>/dev/null || echo 0)" "$sw"
+        prefix="$(opam var prefix --switch="$sw" 2>/dev/null)"
+        printf '%s\t%s\n' "$(stat -c %Y "$prefix" 2>/dev/null || stat -f %m "$prefix" 2>/dev/null || echo 0)" "$sw"
       done | sort -n | tail -1 | cut -f2)"
   set -- 5.5.0 "${newest_trunk#"${SWITCH_PREFIX}"}"
   echo "No runtimes given; defaulting to: $*"
