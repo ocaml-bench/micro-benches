@@ -16,6 +16,7 @@ with_deps/benchmarksgame/input*.txt
 
 # Generated benchmark outputs (produced by benchmark runs, not inputs)
 simple/minilight/*.ppm
+multicore/multicore-minilight/*.ppm
 
 # Dune build artifacts
 _build/
