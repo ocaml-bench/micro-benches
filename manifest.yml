@@ -938,7 +938,7 @@ programs:
   tokens:
     suite: mpl
     path: with_deps/mpl
-    args: "-f ${RUNNING_BENCH_DIR}/with_deps/mpl/inputs/words.txt --no-output -procs 4"
+    args: "-f ${RUNNING_BENCH_DIR}/with_deps/mpl/inputs/words.txt --no-output -procs 4 -repeat 3000"
   raytracer:
     suite: mpl
     path: with_deps/mpl
