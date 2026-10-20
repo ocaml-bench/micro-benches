@@ -159,7 +159,7 @@ programs:
     suite: sandmark-sequential
     path: simple/stdlib
     build_script: bytes_bench.build.sh
-    args: "bytes_blit 2500000"
+    args: "bytes_blit 125000000"
   bytes_bench_concat:
     suite: sandmark-sequential
     path: simple/stdlib
@@ -229,7 +229,7 @@ programs:
     suite: sandmark-sequential
     path: simple/stdlib
     build_script: string_bench.build.sh
-    args: "string_trim 1000000"
+    args: "string_trim 50000000"
   string_bench_index:
     suite: sandmark-sequential
     path: simple/stdlib
@@ -605,7 +605,7 @@ programs:
     suite: sandmark-sequential
     path: simple/capi
     build_script: capi.build.sh
-    args: "test_no_args_noalloc 10000000"
+    args: "test_no_args_noalloc 600000000"
   capi_few_args_alloc:
     suite: sandmark-sequential
     path: simple/capi
@@ -615,7 +615,7 @@ programs:
     suite: sandmark-sequential
     path: simple/capi
     build_script: capi.build.sh
-    args: "test_few_args_noalloc 10000000"
+    args: "test_few_args_noalloc 600000000"
   capi_many_args_alloc:
     suite: sandmark-sequential
     path: simple/capi
@@ -625,7 +625,7 @@ programs:
     suite: sandmark-sequential
     path: simple/capi
     build_script: capi.build.sh
-    args: "test_many_args_noalloc 10000000"
+    args: "test_many_args_noalloc 300000000"
 
   # --- sandmark-with-deps ------------------------------------------
   graph500seq:
@@ -744,7 +744,7 @@ programs:
   effect_throughput_perform:
     suite: multicore-effects
     path: multicore/multicore-effects
-    args: "1_000_000"
+    args: "60_000_000"
   effect_throughput_perform_drop:
     suite: multicore-effects
     path: multicore/multicore-effects
@@ -938,7 +938,7 @@ programs:
   tokens:
     suite: mpl
     path: with_deps/mpl
-    args: "-f ${RUNNING_BENCH_DIR}/with_deps/mpl/inputs/words.txt --no-output -procs 4"
+    args: "-f ${RUNNING_BENCH_DIR}/with_deps/mpl/inputs/words.txt --no-output -procs 4 -repeat 3000"
   raytracer:
     suite: mpl
     path: with_deps/mpl
