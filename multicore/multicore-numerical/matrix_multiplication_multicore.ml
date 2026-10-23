@@ -2,6 +2,7 @@ module T = Domainslib.Task
 
 let num_domains = try Sys.argv.(1) |> int_of_string with _ -> 1
 let size = try Sys.argv.(2) |> int_of_string with _ -> 1024
+let rounds = try Sys.argv.(3) |> int_of_string with _ -> 1
 
 let matrix_multiply pool res x y =
   let i_n = Array.length x in
@@ -35,6 +36,6 @@ let _ =
     let res = Array.make_matrix size size 0 in
 
     (* print_matrix m1; print_matrix m2; *)
-    matrix_multiply pool res m1 m2;
+    for _ = 1 to rounds do matrix_multiply pool res m1 m2 done;
     T.teardown_pool pool;
     (* print_matrix res; *)

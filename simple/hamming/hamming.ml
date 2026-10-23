@@ -87,13 +87,24 @@ let rec iter_interval f l (start, stop) =
              iter_interval f ll (start-1, stop-1)
 ;;
 
-let rec hamming = lazy (Cons (nn1, merge cmp ham2 (merge cmp ham3 ham5)))
-    and ham2 = lazy (force (map x2 hamming))
-    and ham3 = lazy (force (map x3 hamming))
-    and ham5 = lazy (force (map x5 hamming))
+let run f n =
+  let rec hamming = lazy (Cons (nn1, merge cmp ham2 (merge cmp ham3 ham5)))
+      and ham2 = lazy (force (map x2 hamming))
+      and ham3 = lazy (force (map x3 hamming))
+      and ham5 = lazy (force (map x5 hamming))
+  in
+  iter_interval f hamming (88000, Stdlib.(+) 88000 n);
+  (* Keep all four memoised streams reachable until the end of the round, as
+     the original top-level definitions did. *)
+  ignore (Sys.opaque_identity (hamming, ham2, ham3, ham5))
 ;;
 
 let n = try int_of_string Sys.argv.(1) with _ -> 200
 ;;
 
-iter_interval pr hamming (88000, Stdlib.(+) 88000 n);;
+let rounds = try int_of_string Sys.argv.(2) with _ -> 1
+;;
+
+for r = 1 to rounds do
+  run (if r = rounds then pr else ignore) n
+done;;

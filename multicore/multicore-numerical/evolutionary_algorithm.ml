@@ -50,7 +50,7 @@ let mutate chi x =
 (* Command line arguments *)
 
 
-let runtime = 100000
+let runtime = try int_of_string Sys.argv.(3) with _ -> 100000
 
 let chi = 0.4
 

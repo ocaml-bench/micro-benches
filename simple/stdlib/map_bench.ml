@@ -67,13 +67,18 @@ let map_map iterations =
 
 let () =
   let iterations = int_of_string Sys.argv.(2) in
+  let rounds = try int_of_string Sys.argv.(3) with _ -> 1 in
   match Sys.argv.(1) with
   | "map_iter" ->
       map_iter iterations
   | "map_add" ->
-      ignore (map_add iterations)
+      for _ = 1 to rounds do
+        ignore (Sys.opaque_identity (map_add iterations))
+      done
   | "map_add_duplicate" ->
-      ignore (map_add_duplicate iterations)
+      for _ = 1 to rounds do
+        ignore (Sys.opaque_identity (map_add_duplicate iterations))
+      done
   | "map_remove" ->
       ignore (map_remove iterations)
   | "map_fold" ->

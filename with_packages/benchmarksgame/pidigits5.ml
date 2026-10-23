@@ -32,22 +32,25 @@ let cons (num,den,acc) k =
 
 let columns = 10
 
-let rec digit k z n row col =
-  if n = 0 then Printf.printf "%*s\t:%i\n" (columns-col) "" (row+col) else
+let rec digit out k z n row col =
+  if n = 0 then (if out then Printf.printf "%*s\t:%i\n" (columns-col) "" (row+col)) else
   let d = next z in
   if safe z d then
     if col = columns then begin
       let row = row + col in
-      Printf.printf "\t:%i\n%i" row d;
-      digit k (prod z d) (n-1) row 1
+      if out then Printf.printf "\t:%i\n%i" row d;
+      digit out k (prod z d) (n-1) row 1
     end else begin 
-      print_int d;
-      digit k (prod z d) (n-1) row (col+1)
+      if out then print_int d;
+      digit out k (prod z d) (n-1) row (col+1)
     end
-  else digit (k+1) (cons z k) n row col
+  else digit out (k+1) (cons z k) n row col
 
-let digits n = digit 1 init n 0 0
+let digits out n = digit out 1 init n 0 0
 
-let () = digits (try int_of_string (Array.get Sys.argv 1) with _ -> 27)
+let () =
+  let n = try int_of_string (Array.get Sys.argv 1) with _ -> 27 in
+  let rounds = try int_of_string (Array.get Sys.argv 2) with _ -> 1 in
+  for r = 1 to rounds do digits (r = rounds) n done
 
 

@@ -337,4 +337,6 @@ let main () =
   (* print_mat "R" r; *)
   (* print_mat "Q * R" *) (gemm q r)
 
-let () = main () |> ignore
+let () =
+  let rounds = try int_of_string Sys.argv.(1) with _ -> 1 in
+  for _ = 1 to rounds do main () |> ignore done

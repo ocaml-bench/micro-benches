@@ -1,6 +1,7 @@
 let data_type = Sys.argv.(1)
 let list_length = int_of_string Sys.argv.(2)
-let iterations = 5000000 / list_length
+let multiplier = try int_of_string Sys.argv.(3) with _ -> 1
+let iterations = 5000000 / list_length * multiplier
 
 type a_mutable_record = { mutable an_int : int; a_string : string ; a_float: float }
 
