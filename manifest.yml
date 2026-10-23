@@ -186,7 +186,7 @@ programs:
     suite: sandmark-sequential
     path: simple/stdlib
     build_script: bytes_bench.build.sh
-    args: "bytes_index 250000000"
+    args: "bytes_index 500000000"
   bytes_bench_contains:
     suite: sandmark-sequential
     path: simple/stdlib
@@ -236,7 +236,7 @@ programs:
     suite: sandmark-sequential
     path: simple/stdlib
     build_script: string_bench.build.sh
-    args: "string_index 400000000"
+    args: "string_index 800000000"
   string_bench_contains:
     suite: sandmark-sequential
     path: simple/stdlib
