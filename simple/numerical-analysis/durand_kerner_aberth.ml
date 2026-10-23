@@ -176,7 +176,11 @@ let cs =
   Array.sub cs 0 (Array.length cs * len / 100)
 
 let main () =
-  for i=1 to 10 do
+  let n =
+    if Array.length Sys.argv <= 2
+    then 10
+    else Sys.argv.(2) |> int_of_string in
+  for i=1 to n do
     roots cs |> ignore
   done
 

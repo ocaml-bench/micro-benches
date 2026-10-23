@@ -56,7 +56,7 @@ let mutate chi x =
 
 let num_domains = try int_of_string Sys.argv.(1) with _ -> 4
 
-let runtime = 100000
+let runtime = try int_of_string Sys.argv.(4) with _ -> 100000
 
 let chi = 0.4
 

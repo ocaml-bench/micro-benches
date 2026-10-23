@@ -1,6 +1,7 @@
 module T = Domainslib.Task
 let num_domains = try int_of_string Sys.argv.(1) with _ -> 1
 let mat_size = try int_of_string Sys.argv.(2) with _ -> 1200
+let rounds = try int_of_string Sys.argv.(3) with _ -> 1
 
 let k = Domain.DLS.new_key Random.State.make_self_init
 
@@ -56,10 +57,12 @@ let lup pool (a0 : float array) =
 let () =
   let pool = T.setup_pool ~num_domains:(num_domains - 1) () in
   T.run pool (fun _ ->
+  for _ = 1 to rounds do
   let a = parallel_create pool
     (fun _ _ -> (Random.State.float (Domain.DLS.get k) 100.0) +. 1.0 ) in
   let lu = lup pool a in
   let _l = parallel_create pool (fun i j -> if i > j then get lu i j else if i = j then 1.0 else 0.0) in
   let _u = parallel_create pool (fun i j -> if i <= j then get lu i j else 0.0) in
-  ());
+  ()
+  done);
   T.teardown_pool pool
