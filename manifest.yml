@@ -50,7 +50,9 @@ suites:
     timeout: 120
   multicore-gcroots:
     type: OCamlMulticoreBenchmarkSuite
-    timeout: 120
+    # 4 domains and a stop-the-world full major every 37 steps: on a 3-core
+    # macOS runner globroots_sp takes about 120 s (2 s on an Apple M5).
+    timeout: 300
   oxcaml-prefetch:
     type: OCamlOxcamlBenchmarkSuite
     timeout: 30
