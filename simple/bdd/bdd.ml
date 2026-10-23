@@ -232,7 +232,27 @@ Format.eprintf "%d@." !nodeC;
   exit 0
 *)
 
-let _ = main()
+(* Node ids restart after resetUnique, so every cache slot keyed on an id
+   must be cleared with it. *)
+let reset () =
+  resetUnique ();
+  Array.fill andslot1 0 cacheSize 0;
+  Array.fill andslot2 0 cacheSize 0;
+  Array.fill andslot3 0 cacheSize zero;
+  Array.fill xorslot1 0 cacheSize 0;
+  Array.fill xorslot2 0 cacheSize 0;
+  Array.fill xorslot3 0 cacheSize zero;
+  Array.fill notslot1 0 cacheSize 0;
+  Array.fill notslot2 0 cacheSize one;
+  seed := 0
+
+let _ =
+  let rounds =
+    if Array.length Sys.argv >= 4 then int_of_string Sys.argv.(3) else 1 in
+  for r = 1 to rounds do
+    if r > 1 then reset ();
+    main ()
+  done
 
 let () =
   try

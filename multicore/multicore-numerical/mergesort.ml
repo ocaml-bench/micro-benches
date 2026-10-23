@@ -1,4 +1,5 @@
 let n = try int_of_string @@ Sys.argv.(1) with _ -> 1024
+let rounds = try int_of_string @@ Sys.argv.(2) with _ -> 1
 
 let bubble_sort_threshold = 32
 
@@ -46,4 +47,10 @@ let sort a =
    merge_sort false a b 0 (Array.length a)
 
 let () =
-    (sort a)
+  (* The unsorted input, restored before each extra round. Only allocated when
+     repeating, so a single round has the original heap. *)
+  let pristine = if rounds > 1 then Array.copy a else [||] in
+  for r = 1 to rounds do
+    if r > 1 then Array.blit pristine 0 a 0 n;
+    sort a
+  done

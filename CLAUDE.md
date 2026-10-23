@@ -243,6 +243,34 @@ compiler as the workload. running-ng always exports all five.
   (`rec_eff_evenodd` defaults to 500M iterations). Running a binary bare is a
   different benchmark from what the sweep runs — always check `ci-manifest.py
   list --only <name>`.
+- **Every program runs for at least 1 s** (about 2 s on an Apple M5): olly and
+  perf attach to a running process, and a program that exits in tens of ms gets
+  no data. When retuning, raise a repeat count, not a problem size, so the
+  working set and GC regime stay the same. Programs whose only knob was a size
+  got an optional trailing repeat arg (rounds, or a hardcoded loop count made
+  configurable) that defaults to the old behaviour (table in
+  `SANDMARK_ADAPTATIONS.md`). Re-check timings after changing args, and keep
+  running-ng's `micro_base.yml` in step. A round must redo the first round's
+  work, so some state is reset between rounds:
+  - **Sorts:** the unsorted input is copied back, since sorted input makes
+    the last-element pivot quadratic.
+  - **`floyd_warshall*`:** the matrix is rebuilt (`Random.init 512`); a pass
+    over an already-closed matrix does almost nothing.
+  - **`bdd`:** the unique table, every and/xor/not cache slot and the seed are
+    reset together. Node ids restart, so a stale slot returns the wrong node.
+  - **`weakretain`:** the weak array is emptied with `Weak.fill`, not
+    reallocated; a second 10M-slot array doubles peak heap before the first
+    is collected.
+  - **`hamming`, `pidigits5`:** they print only in the last round, so the
+    output does not depend on the round count.
+  - **`test_queue_parallel`, `test_stack_parallel`:** each round spawns and
+    joins both producer and consumer (the original never joined the
+    producer).
+  - **Domains and pools** are created once, outside the loop, except in the
+    queue/stack tests, where spawning them is part of what is measured.
+  - `evolutionary_algorithm*` takes a generation budget: a bigger value is one
+    longer evolution, not several runs. `fannkuchredux_multicore` prints its
+    result every round.
 - **`with_packages/` is not hermetic** — each build script `opam install`s into
   the active switch, so the library version is a function of the switch, not of
   the repo. That is why `decompress`, `yojson`, `owl` and `zarith_pi` moved to

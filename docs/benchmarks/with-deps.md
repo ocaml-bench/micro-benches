@@ -2,6 +2,8 @@
 
 Benchmarks that need a multi-library dune build or an input file generated first. The generated inputs are runtime-independent: a companion `<name>.build.deps.sh` produces them once and skips itself thereafter, so every runtime in a sweep reads identical bytes. 10 programs.
 
+The arguments each program is run with are in `manifest.yml`.
+
 ### graph500seq
 
 - **Source:** sandmark `benchmarks/graph500seq/`
@@ -50,28 +52,28 @@ Benchmarks that need a multi-library dune build or an input file generated first
 
 - **Source:** sandmark `benchmarks/mpl/bench/primes/`
 - **Build:** dune (multi-library), in `with_deps/mpl/`; auto-installs `domainslib`
-- **Args:** `-N <int> -procs <int>` — parallel prime sieve; `-N` is the upper bound (default 100M), `-procs` is domain count
+- **Args:** `-N <int> -procs <int> [-repeat <k>]`: upper bound (default 100M) and domain count; `-repeat` runs the sieve `k` times (default 1).
 - **Description:** Parallel sieve of Eratosthenes using the mpl Forkjoin library (wraps `Domainslib.Task`). OCaml ≥ 5 required.
 
 ### msort_ints
 
 - **Source:** sandmark `benchmarks/mpl/bench/msort_ints/`
 - **Build:** dune (multi-library), in `with_deps/mpl/`; auto-installs `domainslib`
-- **Args:** `-N <int> -procs <int>` — array size (default 10M) and domain count
+- **Args:** `-N <int> -procs <int> [-repeat <k>]`: array size (default 10M) and domain count; `-repeat` sorts a fresh copy of the input `k` times (default 1).
 - **Description:** Parallel merge sort on a random integer array using the mpl Seq/Merge/Quicksort libraries. OCaml ≥ 5 required.
 
 ### msort_strings
 
 - **Source:** sandmark `benchmarks/mpl/bench/msort_strings/`
 - **Build:** dune (multi-library), in `with_deps/mpl/`; auto-installs `domainslib`
-- **Args:** `-f <words64.txt> -procs <int>` — absolute path to `inputs/words64.txt` (37 MB, bundled)
+- **Args:** `-f <words64.txt> -procs <int> [-repeat <k>]`: absolute path to `inputs/words64.txt` (37 MB, bundled); the file is read once and `-repeat` sorts it `k` times (default 1).
 - **Description:** Parallel merge sort on strings read from a word file. OCaml ≥ 5 required.
 
 ### tokens
 
 - **Source:** sandmark `benchmarks/mpl/bench/tokens/`
 - **Build:** dune (multi-library), in `with_deps/mpl/`; auto-installs `domainslib`
-- **Args:** `-f <words.txt> --no-output -procs <int>` — absolute path to `inputs/words.txt` (590 KB, bundled)
+- **Args:** `-f <words.txt> --no-output -procs <int> [-repeat <k>]`: absolute path to `inputs/words.txt` (590 KB, bundled); `-repeat` tokenizes it `k` times (default 1).
 - **Description:** Parallel token frequency count using a concurrent hashset. OCaml ≥ 5 required.
 
 ### raytracer

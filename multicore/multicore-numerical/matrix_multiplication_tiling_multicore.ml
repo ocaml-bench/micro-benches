@@ -2,6 +2,7 @@ module C = Domainslib.Chan
 
 let num_domains = try int_of_string Sys.argv.(1) with _ -> 1
 let size = try int_of_string Sys.argv.(2) with _ -> 1024
+let rounds = try int_of_string Sys.argv.(3) with _ -> 1
 
 type message = Do of (unit -> unit) | Quit
 type chan = {req: message C.t; resp: unit C.t}
@@ -63,7 +64,9 @@ let () =
   let m1 = Array.init size (fun _ -> Array.init size (fun _ -> Random.int 100))
   and m2 = Array.init size (fun _ -> Array.init size (fun _ -> Random.int 100)) in
   (* let mat=aux [|[|1;2|];[|3;4|]|] [|[|-3;-8;3|];[|-2;1;4|]|] in *)
-  let mat=aux m1 m2 in
+  let mat = ref (aux m1 m2) in
+  for _ = 2 to rounds do mat := aux m1 m2 done;
+  let mat = !mat in
   let _x = Array.length mat
   and _y = Array.length mat.(0) in
   (*for i = 0 to x-1 do

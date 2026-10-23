@@ -151,5 +151,7 @@ and sieve : pid -> unit =
        loop ()
     | _ -> ()
 
+let rounds = try int_of_string Sys.argv.(2) with _ -> 1
+
 (* Run application *)
-let _ = mailbox (run generator)
+let _ = for _ = 1 to rounds do mailbox (run generator) done

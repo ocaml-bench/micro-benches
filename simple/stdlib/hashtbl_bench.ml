@@ -107,6 +107,7 @@ let () =
     done
   in
   let iterations = int_of_string Sys.argv.(2) in
+  let rounds = try int_of_string Sys.argv.(3) with _ -> 1 in
   match Sys.argv.(1) with
   | "int_replace1" ->
       for _ = 0 to iterations do
@@ -137,11 +138,11 @@ let () =
   | "hashtbl_fold" ->
       hashtbl_fold iterations
   | "hashtbl_add_resizing" ->
-      hashtbl_add false iterations
+      for _ = 1 to rounds do hashtbl_add false iterations done
   | "hashtbl_add_sized" ->
-      hashtbl_add true iterations
+      for _ = 1 to rounds do hashtbl_add true iterations done
   | "hashtbl_add_duplicate" ->
-      hashtbl_add_duplicate iterations
+      for _ = 1 to rounds do hashtbl_add_duplicate iterations done
   | "hashtbl_remove" ->
       hashtbl_remove iterations
   | "hashtbl_find" ->

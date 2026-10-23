@@ -2,12 +2,12 @@ type a_mutable_record = { mutable an_int : int; a_string : string ; a_float: flo
 
 let weak_percent = int_of_string Sys.argv.(1)
 let weak_array_size = int_of_string Sys.argv.(2)
-
-let () = Random.init 42
+let rounds = try int_of_string Sys.argv.(3) with _ -> 1
 
 let weak_array = Weak.create weak_array_size
 
-let () =
+let round () =
+  Random.init 42;
   let v = ref 0 in
   for i = 1 to 10_000_000 do
     let t = { an_int = i; a_string = "foo"; a_float = 0.0 } in
@@ -18,4 +18,12 @@ let () =
       end
     else
       ignore(Sys.opaque_identity ref t)
+  done
+
+(* Emptying the array rather than allocating a new one keeps a single weak
+   array live, as in a one-round run. *)
+let () =
+  for r = 1 to rounds do
+    if r > 1 then Weak.fill weak_array 0 weak_array_size None;
+    round ()
   done

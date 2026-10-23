@@ -2,6 +2,7 @@ module T = Domainslib.Task
 
 let num_domains = try int_of_string Sys.argv.(1) with _ -> 1
 let n = try int_of_string Sys.argv.(2) with _ -> 4
+let rounds = try int_of_string Sys.argv.(3) with _ -> 1
 (* n is size of matrix  *)
 
 type edge =
@@ -59,9 +60,10 @@ let f_w pool adj =
   done
 
 let ()=
+  let pool = T.setup_pool ~num_domains:(num_domains - 1) () in
+  for _ = 1 to rounds do
   Random.init 512;
   let adj = make_adj n in
-  let pool = T.setup_pool ~num_domains:(num_domains - 1) () in
   (*
   let adj = [|
     [| Value 0; Value 8; Infinity; Value 1 |];
@@ -72,4 +74,5 @@ let ()=
   *)
   f_w pool adj;
   (* print_mat adj ; *)
+  done;
   T.teardown_pool pool

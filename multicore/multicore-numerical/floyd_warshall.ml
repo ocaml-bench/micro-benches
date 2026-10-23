@@ -1,4 +1,5 @@
 let n = try int_of_string Sys.argv.(1) with _ -> 4
+let rounds = try int_of_string Sys.argv.(2) with _ -> 1
 
 type edge =
   | Infinity
@@ -51,7 +52,9 @@ let f_w adj =
   done
 
 let () =
-  Random.init 512;
-  let adj = make_adj n in
-  f_w adj
+  for _ = 1 to rounds do
+    Random.init 512;
+    let adj = make_adj n in
+    f_w adj
+  done
  (* print_mat adj*)

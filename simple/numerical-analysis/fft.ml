@@ -73,4 +73,6 @@ let main () =
   |> fft
   |> ifft
 
-let () = main () |> ignore
+let () =
+  let rounds = try int_of_string Sys.argv.(2) with _ -> 1 in
+  for _ = 1 to rounds do main () |> ignore done

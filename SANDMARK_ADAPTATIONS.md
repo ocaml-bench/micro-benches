@@ -159,6 +159,7 @@ exist.
 compiled first. The file is otherwise identical to the type definitions
 inlined in sandmark's dune configuration.
 
+
 ---
 
 ## benchmarksgame: input file path via `argv[1]`
@@ -314,6 +315,7 @@ produced by that final `next` was never counted, so the result is unchanged:
 both now print the reference values for `n = 11` (checksum `556355`,
 `Pfannkuchen(11) = 51`).
 
+
 ---
 
 ## quicksort_multicore: wrap the top-level call in `Task.run` (2026-08-10)
@@ -328,6 +330,7 @@ worker), and `quicksort` was called straight from the main domain.
 num_domains pool)`, matching every other `*_multicore` benchmark in the
 directory (`mergesort_multicore`, `nqueens_multicore`,
 `LU_decomposition_multicore`, …).
+
 
 
 ## minilight_multicore: force the triangle lazies before the domains start (2026-09-18)
@@ -375,3 +378,49 @@ indirection from the measured path.
 has the same `lazy` fields and does not need the change, having one domain.
 
 ---
+
+## Optional repeat counts, so every program runs for at least 1 s
+
+The change affects the 55 programs listed below, in `simple/`, `with_packages/`
+and `multicore/`. Because olly and perf attach to a process that is already running, programs that
+exit within tens of milliseconds don't get any metric captured, while programs that exit within a
+few hundred get metrics that are dominated by start-up.
+
+`manifest.yml` sizes every program to run for about 2 s on an Apple M5, which leaves room for
+faster machines to stay above 1 s. Most programs already take an iteration count, so we simply
+modify their arguments.
+
+There are two changes (intended to preserve the old behaviour):
+
+- **A hardcoded count made into an argument:** the loop that was already
+  there just runs more times.
+- **Rounds:** the whole workload is repeated, with its state reset between
+  rounds so every round does the same work as the first.
+
+| Program(s) | New argument | Default | Kind |
+|---|---|---|---|
+| `almabench` | argv[1], `test_loops` | 5 | count |
+| `kb`, `kb_no_exc` | argv[1], `kb_complete` passes | 100 | count |
+| `durand_kerner_aberth` | argv[2], root-finding passes | 10 | count |
+| `crout_decomposition`, `qr_decomposition`, `naive_multilayer` | argv[1] | 1 | rounds |
+| `levinson_durbin` | argv[2] | 1 | rounds |
+| `fft` | argv[2] | 1 | rounds |
+| `lists` | argv[3], multiplier on iterations | 1 | count |
+| `stress` | argv[3], iterations | 25000 | count |
+| `stacks` | argv[3], `run_many_times` | 5000 | count |
+| `finalise` | argv[2], iterations | 10000 | count |
+| `weakretain` | argv[3] | 1 | rounds |
+| `hamming` | argv[2] | 1 | rounds |
+| `bdd` | argv[3] | 1 | rounds |
+| `map_bench` (`map_add`, `map_add_duplicate`), `hashtbl_bench` (`hashtbl_add_*`) | argv[3] | 1 | rounds |
+| `pidigits5` | argv[2] | 1 | rounds |
+| `eratosthenes` | argv[2] | 1 | rounds |
+| `floyd_warshall`, `quicksort`, `mergesort`, `matrix_multiplication`, `nqueens` | argv[2] | 1 | rounds |
+| the `_multicore` versions of those five, plus `matrix_multiplication_tiling_multicore`, `LU_decomposition_multicore`, `fannkuchredux_multicore` | argv[3] | 1 | rounds |
+| `spectralnorm2_multicore` | argv[3], power iterations | 10 | count |
+| `evolutionary_algorithm` / `_multicore` | argv[3] / argv[4], generation budget | 100000 | count |
+| `test_queue_*`, `test_stack_*` | argv[2] | 1 | rounds |
+| `test_spsc_queue_pingpong_parallel` | argv[3] | 1 | rounds |
+| `kernel1_run_multicore` | `-repeat N` | 1 | rounds |
+
+The source files are otherwise identical to the original sandmark.
