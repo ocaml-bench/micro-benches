@@ -51,11 +51,11 @@ jobs:
           # free of version numbers — bumping the compiler below must not
           # silently orphan the required check.
           - label: "stable"
-            os: ubuntu-latest
+            os: ubuntu-26.04
             ocaml: "5.5.0"
             required: true
           - label: "trunk"
-            os: ubuntu-latest
+            os: ubuntu-26.04
             ocaml: "ocaml-variants.5.7.0+trunk"
             required: false
           # Apple Silicon. Informational until it has been green for a while.
