@@ -35,8 +35,11 @@ let rec nqueens n j xs =
     end
 
 let board_size = try int_of_string Sys.argv.(1) with _ -> 13
+let rounds = try int_of_string Sys.argv.(2) with _ -> 1
 
 let () =
-  let n_solutions = nqueens board_size 0 [] in
+  let n_solutions = ref 0 in
+  for _ = 1 to rounds do n_solutions := nqueens board_size 0 [] done;
+  let n_solutions = !n_solutions in
   Printf.printf "%i solutions for board of size %i\n" n_solutions board_size
 

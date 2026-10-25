@@ -10,6 +10,7 @@ module T = Domainslib.Task
 
 let workers = try int_of_string @@ Sys.argv.(1) with _ -> 10
 let n = try int_of_string Sys.argv.(2) with _ -> 7
+let rounds = try int_of_string Sys.argv.(3) with _ -> 1
 let num_domains = workers
 let workers = 10
 
@@ -128,5 +129,5 @@ let main pool s_n =
 
 let _ =
   let pool = T.setup_pool ~num_domains:(num_domains - 1) () in
-  main pool n;
+  for _ = 1 to rounds do main pool n done;
   T.teardown_pool pool

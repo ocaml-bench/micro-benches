@@ -2,12 +2,13 @@ open Printf
 
 let num_threads = int_of_string Sys.argv.(1)
 let num_messages = int_of_string Sys.argv.(2)
+let rounds = try int_of_string Sys.argv.(3) with _ -> 1
 
 type message = Ping of int | Bye
 
 let queue_size = num_messages+1
 let last_queue : message Spsc_queue.t ref = ref (Spsc_queue.create queue_size)
-let first_queue = !last_queue
+let first_queue = ref !last_queue
 
 let rec spinning_enqueue q m =
     match Spsc_queue.enqueue q m with
@@ -27,7 +28,7 @@ let rec ping_pong_messages n in_queue out_queue =
     end
 
 let populate_first_queue () = for n = 0 to num_messages-1 do
-    spinning_enqueue first_queue (if n < num_messages-1 then Ping(n) else Bye)
+    spinning_enqueue !first_queue (if n < num_messages-1 then Ping(n) else Bye)
 done
 
 let rec start_domains n lim domains =
@@ -42,5 +43,13 @@ let rec start_domains n lim domains =
                     start_domains (n+1) lim (new_domain::domains)
                 end
 
-let () = populate_first_queue (); let domains = start_domains 0 num_threads [] in
+let () =
+  for r = 1 to rounds do
+    if r > 1 then begin
+      let q = Spsc_queue.create queue_size in
+      first_queue := q;
+      last_queue := q
+    end;
+    populate_first_queue (); let domains = start_domains 0 num_threads [] in
             ignore(List.map (fun domain -> Domain.join domain) domains)
+  done

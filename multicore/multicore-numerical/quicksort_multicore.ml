@@ -2,6 +2,7 @@ module T = Domainslib.Task
 
 let num_domains = try int_of_string Sys.argv.(1) with _ -> 1
 let n = try int_of_string Sys.argv.(2) with _ -> 2000
+let rounds = try int_of_string Sys.argv.(3) with _ -> 1
 
 let swap arr i j =
   let temp = arr.(i) in
@@ -45,7 +46,13 @@ let () =
      so calling [quicksort] straight from the main domain raised
      Effect.Unhandled(Task.Wait). Every other _multicore benchmark here wraps
      its top-level call the same way. *)
-  T.run pool (fun () -> quicksort arr 0 (Array.length arr - 1) num_domains pool);
+  (* The unsorted input, restored before each extra round. Only allocated when
+     repeating, so a single round has the original heap. *)
+  let pristine = if rounds > 1 then Array.copy arr else [||] in
+  for r = 1 to rounds do
+    if r > 1 then Array.blit pristine 0 arr 0 n;
+    T.run pool (fun () -> quicksort arr 0 (Array.length arr - 1) num_domains pool)
+  done;
   (* for i = 0 to  Array.length arr - 1 do
     print_int arr.(i);
     print_string "  "

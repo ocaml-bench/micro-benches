@@ -1,5 +1,5 @@
 let percent_finalize = int_of_string Sys.argv.(1)
-let iterations = 10000
+let iterations = try int_of_string Sys.argv.(2) with _ -> 10000
 
 let () = Random.init 42
 

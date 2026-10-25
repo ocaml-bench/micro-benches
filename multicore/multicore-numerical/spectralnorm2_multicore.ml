@@ -8,6 +8,7 @@
 
 let num_domains = try int_of_string Sys.argv.(1) with _ -> 1
 let n = try int_of_string Sys.argv.(2) with _ ->  2000
+let iterations = try int_of_string Sys.argv.(3) with _ -> 10
 
 module T = Domainslib.Task
 
@@ -37,7 +38,7 @@ let () =
   let pool = T.setup_pool ~num_domains:(num_domains - 1) () in
   let u = Array.make n 1.0  and  v = Array.make n 0.0 in
   T.run pool (fun _ ->
-  for _i = 0 to 9 do
+  for _i = 1 to iterations do
     eval_AtA_times_u pool u v; eval_AtA_times_u pool v u
   done);
   T.teardown_pool pool;

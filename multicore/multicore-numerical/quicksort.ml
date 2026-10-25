@@ -1,4 +1,5 @@
 let n = try int_of_string Sys.argv.(1) with _ -> 2000
+let rounds = try int_of_string Sys.argv.(2) with _ -> 1
 
 let swap arr i j =
 	let temp = arr.(i) in
@@ -38,7 +39,13 @@ let quicksort arr low high =
 
 let () =
   let arr = Array.init n (fun _ -> Random.int n) in
-	quicksort arr 0 (Array.length arr - 1);
+  (* The unsorted input, restored before each extra round. Only allocated when
+     repeating, so a single round has the original heap. *)
+  let pristine = if rounds > 1 then Array.copy arr else [||] in
+  for r = 1 to rounds do
+    if r > 1 then Array.blit pristine 0 arr 0 n;
+    quicksort arr 0 (Array.length arr - 1)
+  done;
 	(* for i = 0 to  Array.length arr - 1 do
 		print_int arr.(i);
     print_string "  "

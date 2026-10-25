@@ -2,6 +2,7 @@ module T = Domainslib.Task
 
 let num_domains = try int_of_string @@ Sys.argv.(1) with _ -> 1
 let n = try int_of_string @@ Sys.argv.(2) with _ -> 1024
+let rounds = try int_of_string @@ Sys.argv.(3) with _ -> 1
 
 let bubble_sort_threshold = 32
 
@@ -49,5 +50,11 @@ let sort pool a =
 
 let () =
   let pool = T.setup_pool ~num_domains:(num_domains - 1) () in
-  sort pool a;
+  (* The unsorted input, restored before each extra round. Only allocated when
+     repeating, so a single round has the original heap. *)
+  let pristine = if rounds > 1 then Array.copy a else [||] in
+  for r = 1 to rounds do
+    if r > 1 then Array.blit pristine 0 a 0 n;
+    sort pool a
+  done;
   T.teardown_pool pool

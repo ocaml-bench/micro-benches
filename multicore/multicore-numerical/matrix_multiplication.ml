@@ -1,4 +1,5 @@
 let size = try int_of_string Sys.argv.(1) with _ -> 1024
+let rounds = try int_of_string Sys.argv.(2) with _ -> 1
 
 let matrix_multiply res x y =
   let i_n = Array.length x in
@@ -29,6 +30,6 @@ let () =
   let m2 = Array.init size (fun _ -> Array.init size (fun _ -> Random.int 100)) in
   let res = Array.make_matrix size size 0 in
 
-  matrix_multiply res m1 m2;
+  for _ = 1 to rounds do matrix_multiply res m1 m2 done;
 
   (* print_matrix res; *)

@@ -4,6 +4,8 @@ Benchmarks that require OCaml 5.x and the `Effect` module. Source is in `multico
 
 Use `OCamlMulticoreBenchmarkSuite` (instead of `OCamlBenchmarkSuite`) in running-ng configs. This suite type enforces OCaml >= 5 at build/run time and raises a clear error if you attempt to sweep with an older compiler.
 
+The arguments each program is run with are in `manifest.yml`.
+
 ### multicore/multicore-effects
 
 Single-file effect benchmarks compiled with `ocamlopt`. Adapted from sandmark `benchmarks/multicore-effects/` for the OCaml 5.2+ `Effect` module API (sandmark's originals use the pre-5.2 `effect` keyword syntax, which is not accepted by OCaml 5.2+).
@@ -82,7 +84,7 @@ Single-file effect benchmarks compiled with `ocamlopt`. Adapted from sandmark `b
 
 - **Source:** sandmark `benchmarks/multicore-effects/eratosthenes.ml` (adapted)
 - **Build:** ocamlopt (stdlib only)
-- **Args:** `<n>` — generate primes up to `n`; default `101`
+- **Args:** `<n> [rounds]`: generate primes up to `n` (default `101`); `rounds` reruns the whole sieve (default 1).
 - **Description:** Message-passing Sieve of Eratosthenes implemented entirely with effects. Uses four effects (`Spawn`, `Yield`, `Send`, `Recv`) and two layered handlers: `run` (round-robin scheduler handling `Spawn`/`Yield`) and `mailbox` (per-pid message queue handling `Send`/`Recv`). The outer `mailbox` handler catches `Send`/`Recv` that bubble through `run`'s handler. Exercises effect handler chaining, continuation queuing, and a Map-backed mailbox.
 
 ### multicore/multicore-structures
@@ -98,28 +100,28 @@ Lock-free concurrent data structures implemented with OCaml 5 stdlib `Atomic`. N
 
 - **Source:** sandmark `benchmarks/multicore-structures/test_queue_sequential.ml`
 - **Build:** ocamlfind + unix (stdlib Atomic, no domainslib)
-- **Args:** `<items>` — number of items to enqueue/dequeue
+- **Args:** `<items> [rounds]`: items to push, then pop; `rounds` repeats both phases, printing a timing line per round (default 1).
 - **Description:** Sequentially enqueues then dequeues `<items>` integers through the MS queue. Checks that no items are lost and reports throughput (items/ms).
 
 #### test_queue_parallel
 
 - **Source:** sandmark `benchmarks/multicore-structures/test_queue_parallel.ml`
 - **Build:** ocamlfind + unix
-- **Args:** `<items>`
+- **Args:** `<items> [rounds]`: each round spawns a producer and a consumer domain and joins both (default 1).
 - **Description:** One domain enqueues `<items>` integers while a second domain concurrently dequeues. Exercises the MS queue's CAS-based enqueue/dequeue paths under concurrent access.
 
 #### test_stack_sequential
 
 - **Source:** sandmark `benchmarks/multicore-structures/test_stack_sequential.ml`
 - **Build:** ocamlfind + unix
-- **Args:** `<items>`
+- **Args:** `<items> [rounds]`: items to push, then pop; `rounds` repeats both phases, printing a timing line per round (default 1).
 - **Description:** Sequential push/pop stress test on the Treiber stack.
 
 #### test_stack_parallel
 
 - **Source:** sandmark `benchmarks/multicore-structures/test_stack_parallel.ml`
 - **Build:** ocamlfind + unix
-- **Args:** `<items>`
+- **Args:** `<items> [rounds]`: each round spawns a producer and a consumer domain and joins both (default 1).
 - **Description:** Concurrent push (one domain) / pop (another domain) on the Treiber stack.
 
 #### test_spsc_queue_sequential
@@ -140,7 +142,7 @@ Lock-free concurrent data structures implemented with OCaml 5 stdlib `Atomic`. N
 
 - **Source:** sandmark `benchmarks/multicore-structures/test_spsc_queue_pingpong_parallel.ml`
 - **Build:** ocamlfind + unix
-- **Args:** `<num_threads> <num_messages>`
+- **Args:** `<num_threads> <num_messages> [rounds]`: each round uses a fresh first queue and fresh domains (default 1).
 - **Description:** Creates a ring of `<num_threads>` domains, each connected to the next by an SPSC queue. `Ping` messages circulate until a `Bye` terminates each thread. Measures inter-domain message-passing latency through a chain of SPSC queues.
 
 ### multicore/multicore-numerical
@@ -165,7 +167,7 @@ Parallel versions of classic numerical benchmarks using `domainslib`. Each multi
 
 - **Source:** sandmark `benchmarks/multicore-numerical/{floyd_warshall_multicore,floyd_warshall}.ml`
 - **Build:** ocamlfind + domainslib; stdlib
-- **Args:** `<num_domains> <n>` — default `1 4`; sequential: `<n>` — default `4`
+- **Args:** `<num_domains> <n> [rounds]`: default `1 4 1`; sequential: `<n> [rounds]`: default `4 1`. Each round rebuilds the matrix.
 - **Description:** All-pairs shortest path (Floyd–Warshall). The outer `k` loop is sequential (dependency), inner `i` loop parallelised with `Task.parallel_for`. Uses an algebraic `edge` type (`Value of int | Infinity`).
 
 #### game_of_life_multicore / game_of_life
@@ -186,63 +188,63 @@ Parallel versions of classic numerical benchmarks using `domainslib`. Each multi
 
 - **Source:** sandmark `benchmarks/multicore-numerical/spectralnorm2_multicore.ml`
 - **Build:** ocamlfind + domainslib
-- **Args:** `<num_domains> <n>` — default `1 2000`
+- **Args:** `<num_domains> <n> [iterations]`: default `1 2000 10`; `iterations` is the number of power iterations.
 - **Description:** Spectral norm of the infinite matrix A where `A[i,j] = 1/((i+j)*(i+j+1)/2+i+1)`. Power iteration using `Task.parallel_for` for matrix-vector products. Based on benchmarksgame spectral-norm #2.
 
 #### fannkuchredux_multicore
 
 - **Source:** sandmark `benchmarks/multicore-numerical/fannkuchredux_multicore.ml`
 - **Build:** ocamlfind + domainslib
-- **Args:** `<workers> <n>` — default `10 7`
+- **Args:** `<workers> <n> [rounds]`: default `10 7 1`; the result is printed every round.
 - **Description:** Fannkuch-redux (permutation counting). Divides the factorial permutation space into `workers` chunks and uses `Task.parallel_for` to count flip operations in parallel.
 
 #### quicksort_multicore / quicksort
 
 - **Source:** sandmark `benchmarks/multicore-numerical/{quicksort_multicore,quicksort}.ml`
 - **Build:** ocamlfind + domainslib; stdlib
-- **Args:** `<num_domains> <n>` — default `1 2000`; sequential: `<n>` — default `2000`
+- **Args:** `<num_domains> <n> [rounds]`: default `1 2000 1`; sequential: `<n> [rounds]`: default `2000 1`. The unsorted input is restored before each round.
 - **Description:** Parallel quicksort using `Task.async`/`Task.await` to spawn recursive subproblems. Depth-bounded spawning (halves remaining depth budget at each partition).
 
 #### mergesort_multicore / mergesort
 
 - **Source:** sandmark `benchmarks/multicore-numerical/{mergesort_multicore,mergesort}.ml`
 - **Build:** ocamlfind + domainslib; stdlib
-- **Args:** `<num_domains> <n>` — default `1 1024`; sequential: `<n>` — default `1024`
+- **Args:** `<num_domains> <n> [rounds]`: default `1 1024 1`; sequential: `<n> [rounds]`: default `1024 1`. The unsorted input is restored before each round.
 - **Description:** Parallel merge sort using `Task.async`/`Task.await`. Falls back to bubble sort below threshold (32 elements). Uses an in-place double-buffer merge strategy.
 
 #### matrix_multiplication_multicore / matrix_multiplication
 
 - **Source:** sandmark `benchmarks/multicore-numerical/{matrix_multiplication_multicore,matrix_multiplication}.ml`
 - **Build:** ocamlfind + domainslib; stdlib
-- **Args:** `<num_domains> <size>` — default `1 1024`; sequential: `<size>` — default `1024`
+- **Args:** `<num_domains> <size> [rounds]`: default `1 1024 1`; sequential: `<size> [rounds]`: default `1024 1`.
 - **Description:** Dense integer matrix multiplication. Row-parallel using `Task.parallel_for` over the output rows.
 
 #### matrix_multiplication_tiling_multicore
 
 - **Source:** sandmark `benchmarks/multicore-numerical/matrix_multiplication_tiling_multicore.ml`
 - **Build:** ocamlfind + domainslib
-- **Args:** `<num_domains> <size>` — default `1 1024`
+- **Args:** `<num_domains> <size> [rounds]`: default `1 1024 1`.
 - **Description:** Tiled matrix multiplication using explicit `Domainslib.Chan`-based task distribution rather than `parallel_for`. Tile size is 64. The channel-based dispatch is chosen because the loop has decreasing work per iteration, which makes static `parallel_for` chunking suboptimal.
 
 #### LU_decomposition_multicore / LU_decomposition
 
 - **Source:** sandmark `benchmarks/multicore-numerical/{LU_decomposition_multicore,LU_decomposition}.ml`
 - **Build:** ocamlfind + domainslib; stdlib
-- **Args:** `<num_domains> <mat_size>` — default `1 1200`; sequential: `<mat_size>` — default `1200`
+- **Args:** `<num_domains> <mat_size> [rounds]`: default `1 1200 1`; sequential: `<mat_size>`: default `1200`.
 - **Description:** In-place LU decomposition of a random float matrix. Uses `Task.parallel_for` for row elimination and `Domain.DLS` for domain-local random state. Stores L and U in packed form.
 
 #### nqueens_multicore / nqueens
 
 - **Source:** sandmark `benchmarks/multicore-numerical/{nqueens_multicore,nqueens}.ml`
 - **Build:** ocamlfind + domainslib; stdlib
-- **Args:** `<num_domains> <board_size>` — default `2 13`; sequential: `<board_size>` — default `13`
+- **Args:** `<num_domains> <board_size> [rounds]`: default `2 13 1`; sequential: `<board_size> [rounds]`: default `13 1`.
 - **Description:** N-queens solver. Parallel version spawns a `Task.async` for each valid queen placement at each row, aggregating results with `Task.await`.
 
 #### evolutionary_algorithm_multicore / evolutionary_algorithm
 
 - **Source:** sandmark `benchmarks/multicore-numerical/{evolutionary_algorithm_multicore,evolutionary_algorithm}.ml`
 - **Build:** ocamlfind + domainslib; stdlib
-- **Args:** `<num_domains> <n> <lambda>` — default `4 1000 1000`; sequential: `<n> <lambda>` — default `1000 1000`
+- **Args:** `<num_domains> <n> <lambda> [budget]`: default `4 1000 1000 100000`; sequential: `<n> <lambda> [budget]`: default `1000 1000 100000`. `budget` sets the number of generations (about `budget / lambda`).
 - **Description:** Minimal genetic algorithm optimising the Onemax fitness function. Parallel version uses `Task.parallel_for` to evaluate and mutate the population in each generation. Uses `Domain.DLS` for domain-local random state.
 
 ### multicore/multicore-grammatrix
@@ -308,7 +310,7 @@ Compilation order for both executables: `graphTypes → sparseGraph → generate
 
 - **Source:** sandmark `benchmarks/graph500par/kernel1_run_multicore.ml` (+ `kernel1Par.ml`, `generate.ml`, `sparseGraph.ml`, `graphTypes.ml`)
 - **Build:** ocamlfind + domainslib + unix
-- **Args:** `[-ndomains NUM_DOMAINS] EDGE_LIST_FILE`
+- **Args:** `[-ndomains NUM_DOMAINS] [-repeat N] EDGE_LIST_FILE`: `-repeat` runs kernel 1 `N` times on the same edges (default 1).
 - **Description:** Graph500 Kernel 1 — parallel construction of a sparse adjacency-list representation. Reads the pre-generated edge list from `EDGE_LIST_FILE`, removes self-loops, finds the maximum vertex label using `Task.parallel_for_reduce`, and builds the sparse graph using `Task.parallel_for` with lock-free `Atomic.t`-based adjacency lists. Reports I/O and construction time.
 
 ---
@@ -319,7 +321,7 @@ Compilation order for both executables: `graphTypes → sparseGraph → generate
 
 - **Source:** sandmark `benchmarks/simple-tests/alloc_multicore.ml`
 - **Build:** ocamlopt (stdlib only — uses `Domain.spawn`/`Domain.join`)
-- **Args:** `<num_domains> <iterations>`; config uses `2 200_000`
+- **Args:** `<num_domains> <iterations>`: total iterations, split across the domains.
 - **Description:** Parallel minor-heap allocation benchmark. Each domain allocates small mutable records `{ an_int; a_string; a_float }` in a tight loop. Measures allocation throughput under parallel GC pressure.
 
 ---
@@ -330,6 +332,6 @@ Compilation order for both executables: `graphTypes → sparseGraph → generate
 
 - **Source:** sandmark `benchmarks/simple-tests/pingpong_multicore.ml`
 - **Build:** ocamlfind + domainslib (auto-installed)
-- **Args:** `<num_domains> <chan_size> <total_messages>`; config uses `3 1 1000000`
+- **Args:** `<num_domains> <chan_size> <total_messages>`: pipeline length, channel capacity and number of messages.
 - **Description:** Multi-domain channel ping-pong benchmark using `Domainslib.Chan`. A producer sends messages through a pipeline of worker domains, each incrementing a counter before forwarding. Measures channel throughput and domain synchronisation overhead.
 

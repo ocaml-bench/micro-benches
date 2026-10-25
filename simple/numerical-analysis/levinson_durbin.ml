@@ -67,4 +67,9 @@ let main () =
   ignore (print_ar_coeffs "Sound /e/" Dataset.e order);
   ignore (print_ar_coeffs "Sound /o/" Dataset.o order)
 
-let () = main () |> ignore
+let () =
+  let rounds =
+    if Array.length Sys.argv <= 2
+    then 1
+    else Sys.argv.(2) |> int_of_string in
+  for _ = 1 to rounds do main () |> ignore done

@@ -4,6 +4,8 @@ Benchmarks in `with_packages/` require external opam packages. **No manual
 package installation is needed** — each build script runs `opam install <pkg> -y`
 to install its dependencies into the active opam switch.
 
+The arguments each program is run with are in `manifest.yml`.
+
 ### How package installation works
 
 `running-ng` creates a dedicated opam switch for each runtime via
@@ -31,21 +33,21 @@ sandmark-with-packages:
 
 Seven programs sharing `with_packages/benchmarksgame/`. Each has its own build script; all use dune and link against `zarith`, `str`, and `unix`.
 
-- **binarytrees5** — Args: `21`. Allocates and traverses binary trees of depth 21 using Zarith big integers for node values. GC-intensive short-lived allocation.
-- **fasta3** — Args: `25000000`. Generates a DNA sequence of 25M characters using cumulative probability tables. Exercises sequential array access.
-- **fasta6** — Args: `25000000`. Alternative fasta generator; same input size, different internal algorithm.
-- **mandelbrot6** — Args: `16000`. Renders a 16000×16000 Mandelbrot set image in PBM format. Pure floating-point; no GC pressure.
-- **nbody_benchmarksgame** — Args: `50000000`. (Built by `nbody.build.sh`; named to keep it distinct from `multicore-numerical`'s own `nbody`.) N-body planetary simulation (5 bodies, 50M steps). Pure floating-point; tests float unboxing.
-- **pidigits5** — Args: `10000`. Computes 10000 digits of π using the Stern-Brocot tree algorithm via Zarith arbitrary-precision integers.
-- **spectralnorm2** — Args: `5500`. Approximates the spectral norm of an infinite matrix. Dense floating-point; exercises float arrays.
+- **binarytrees5**: Args: `<depth>`. Allocates and traverses binary trees of depth `depth` using Zarith big integers for node values. GC-intensive short-lived allocation.
+- **fasta3**: Args: `<N>`. Generates a DNA sequence of `N` characters using cumulative probability tables. Exercises sequential array access.
+- **fasta6**: Args: `<N>`. Alternative fasta generator; same argument, different internal algorithm.
+- **mandelbrot6**: Args: `<size>`. Renders a `size`×`size` Mandelbrot set image in PBM format. Pure floating-point; no GC pressure.
+- **nbody_benchmarksgame**: Args: `<steps>`. (Built by `nbody.build.sh`; named to keep it distinct from `multicore-numerical`'s own `nbody`.) N-body planetary simulation (5 bodies, `steps` steps). Pure floating-point; tests float unboxing.
+- **pidigits5**: Args: `<digits> [rounds]`. Computes `digits` digits of π using the Stern-Brocot tree algorithm via Zarith arbitrary-precision integers; `rounds` (default 1) repeats it, printing only in the last round.
+- **spectralnorm2**: Args: `<N>`. Approximates the spectral norm of an infinite matrix. Dense floating-point; exercises float arrays.
 
 ### zarith
 
 Three programs sharing `with_packages/zarith/`. Each has its own build script; all use dune.
 
-- **zarith_fact** — Args: `40 1000000`. Computes factorial of 40, repeated 1M times. Exercises Zarith multiplication. Needs `zarith`.
-- **zarith_fib** — Args: `Z 40`. Fibonacci of 40 using Zarith big integers. Exercises Zarith addition. Needs `zarith`, `num`.
-- **zarith_tak** — Args: `Z 2500`. Tak function with n=2500 using Zarith integers. Exercises recursive calls with big-integer arithmetic. Needs `zarith`, `num`.
+- **zarith_fact**: Args: `<n> <count>`. Computes `n`! `count` times. Exercises Zarith multiplication. Needs `zarith`.
+- **zarith_fib**: Args: `<type> <n>`. Naive Fibonacci of `n`, with `type` one of `int`, `natint`, `Z` or `num`. Exercises Zarith addition. Needs `zarith`, `num`.
+- **zarith_tak**: Args: `<type> <count>`. Computes tak(18, 12, 6) `count` times, with `type` as for `zarith_fib`. Exercises recursive calls with big-integer arithmetic. Needs `zarith`, `num`.
 
 ### chameneos_redux_lwt
 

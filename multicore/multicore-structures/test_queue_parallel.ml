@@ -1,13 +1,15 @@
 let queue = Ms_queue.create ()
 
 let items_to_queue = int_of_string Sys.argv.(1)
+let rounds = try int_of_string Sys.argv.(2) with _ -> 1
 
-let () = 
+let () =
+  for _ = 1 to rounds do
     let start = Unix.gettimeofday () in
-    Domain.spawn (fun _ ->
+    let producer = Domain.spawn (fun _ ->
     for a = 0 to items_to_queue do
         Ms_queue.enqueue queue a
-    done) |> ignore;
+    done) in
     Domain.spawn (fun _ -> begin
         let c = ref 0 in
         while !c < items_to_queue do
@@ -20,4 +22,6 @@ let () =
         Printf.printf "Item was lost - only found %d items\n" !c
     else
         Printf.printf "Queued and dequeued %d items in %f seconds = %f/ms per item\n" items_to_queue duration (1000.0*.duration /. (float_of_int items_to_queue))
-    end) |> Domain.join |> ignore
+    end) |> Domain.join |> ignore;
+    Domain.join producer
+  done
