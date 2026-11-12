@@ -60,7 +60,7 @@ jobs:
             required: false
           # Apple Silicon. Informational until it has been green for a while.
           - label: "macos"
-            os: macos-14
+            os: macos-15
             ocaml: "5.5.0"
             required: false
 
